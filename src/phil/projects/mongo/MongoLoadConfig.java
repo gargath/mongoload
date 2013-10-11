@@ -2,6 +2,8 @@ package phil.projects.mongo;
 
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 /**
  * Config object for loaders. It stores the connection details for the Mongo instance and the number of documents to generate.
  * 
@@ -10,13 +12,15 @@ import java.util.Properties;
  */
 public class MongoLoadConfig {
 
+	private static Logger logger = Logger.getLogger(MongoLoadConfig.class);
+	
 	/**
 	 * Builder class for the config object.
 	 * 
 	 * @author ptaprogg
 	 *
 	 */
-	public static class MongoLoadConfigBuilder {
+	public static final class MongoLoadConfigBuilder {
 		private String hostname;
 		private int port;
 		private String userDB;
@@ -61,8 +65,26 @@ public class MongoLoadConfig {
 		
 	}
 	
+	public static final class MongoLoadConfigValidator {
+		
+		private static Logger logger = Logger.getLogger(MongoLoadConfigValidator.class);
+		
+		public static void validate(MongoLoadConfig config) {
+			if ((config.getPort() == 0) || (config.getPort() > 65535)) {
+				logger.error("Port invalid " + config.getPort());
+				throw new IllegalArgumentException("Configured port number is invalid");
+			}
+			if (!"".equals(config.getUsername()) && ("".equals(config.getAuthDB()))) {
+				throw new IllegalArgumentException("Username given but no authDB provided");
+			}
+			if ("".equals(config.getUserDB())) {
+				throw new IllegalArgumentException("User DB name missing");
+			}
+		}
+	}
+	
 	//Config items
-	private String hostname;
+	private String hostname = "localhost";
 	private int port;
 	private String userDB;
 	private String authDB;
@@ -76,24 +98,31 @@ public class MongoLoadConfig {
 	 * @param props The Properties to use
 	 */
 	public MongoLoadConfig(Properties props) {
-		this.hostname = (String)props.get("hostname");
-		try {
-			this.port = Integer.parseInt((String)props.get("port"));
+		if (props.containsKey("hostname")) {
+			this.hostname = (String)props.getProperty("hostname");
 		}
-		catch (NumberFormatException nfe) {
-			System.err.println("Error reading port from properties file");
-			System.exit(2);
+		else {
+			logger.info("No hostname supplied, assuming localhost");
 		}
-		this.userDB = (String)props.get("userDB");
-		this.authDB = (String)props.get("authDB");
-		this.username = (String)props.get("username");
-		this.password = (String)props.get("password");
+		if (props.containsKey("port")) {
+			try {
+				this.port = Integer.parseInt(props.getProperty("port"));
+			}
+			catch (NumberFormatException nfe) {
+				logger.error("Error reading port number from properties file: " + nfe.getMessage());
+				throw new IllegalArgumentException("Error reading port number from properties file", nfe);
+			}
+		}
+		this.userDB = props.getProperty("userDB");
+		this.authDB = props.getProperty("authDB");
+		this.username = props.getProperty("username");
+		this.password = props.getProperty("password");
 		try {
 			this.numdocs = Integer.parseInt((String)props.get("numdocs"));
 		}
 		catch (NumberFormatException nfe) {
-			System.err.println("Error reading number of documents from properties file");
-			System.exit(2);
+			logger.error("Error reading number of documents from properties file: " + nfe.getMessage());
+			throw new IllegalArgumentException("Error reading port number from properties file", nfe);
 		}
 	}
 	

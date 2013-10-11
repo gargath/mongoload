@@ -26,6 +26,7 @@ public class MongoLoad {
 	protected int progress = 0;
 	
 	public MongoLoad(MongoLoadConfig config, MongoDBObjectFactory factory) {
+		MongoLoadConfig.MongoLoadConfigValidator.validate(config);
 		this.config = config;
 		this.documentFactory = factory;
 	}
@@ -38,22 +39,8 @@ public class MongoLoad {
 	 * @throws IllegalArgumentException If the port number or the provided DBs are invalid, null or empty
 	 * @throws UnknownHostException If the hostname specified for the Mongo instance cannot be resolved
 	 */
-	DB connect() throws IllegalArgumentException, UnknownHostException {
-		//Assume localhost for empty hostname
-		if ((config.getHostname() == null) || (config.getHostname().equals(""))) {
-			logger.info("No hostname supplied, assuming localhost");
-			config.setHostname("localhost");
-		}
-		//Check for valid port number
-		if ((config.getPort() == 0) || (config.getPort() > 65535)) {
-			throw new IllegalArgumentException("Invalid port " + String.valueOf(config.getPort()) + ". Unable to connect.");
-		}
-		//Ensure that database names were provided
-		if ((config.getUserDB() == null) || (config.getUserDB().equals(""))) {
-			logger.error("User DB name missing. Unable to connect.");
-			throw new IllegalArgumentException("User DB name missing");
-		}
-		
+	DB connect() throws UnknownHostException {
+
 		//Now connect the client
 		MongoClient client = new MongoClient(config.getHostname(), config.getPort());
 
