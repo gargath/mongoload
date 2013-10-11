@@ -16,7 +16,7 @@ public class MongoMain {
 			if (args.length > 0) {
 				InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(args[0]);
 				if (is == null) {
-					System.err.println("Unable to load properties file");
+					System.err.println("Unable to load specified properties file");
 					System.exit(1);					
 				}
 				prop.load(is);
@@ -25,19 +25,18 @@ public class MongoMain {
 				//Otherwise we default to mongoload.properties
 				InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("mongoload.properties");
 				if (is == null) {
-					System.err.println("Default properties file mongoload.properties not found");
-					System.exit(1);
+					System.err.println("Default properties file mongoload.properties not found and no properties file specified");
+					System.exit(-1);
 				}
 				prop.load(is);
 			}
 		}
 		catch (IOException ioe) {
-			System.err.println("Unable to load properties file");
-			System.exit(1);
+			System.err.println("Failed to load properties file: " + ioe.getMessage());
+			System.exit(-1);
 		}
 
-		//The config object to be passed to the UI thread
-//		final MongoLoadConfig config = new MongoLoadConfig("ukrhas6", 27017, "test", "admin", "admin", "admin", docCount);
+		//The config object to be passed to the UI thread, created based on the properties
 		final MongoLoadConfig config = new MongoLoadConfig(prop);
 		
 		//Create and run UI thread
