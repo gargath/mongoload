@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import phil.projects.mongo.MongoDBObjectFactory;
-import phil.projects.mongo.MongoInvoiceFactory;
 import phil.projects.mongo.MongoLoad;
 import phil.projects.mongo.MongoLoadConfig;
 
