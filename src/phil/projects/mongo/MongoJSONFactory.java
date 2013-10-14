@@ -1,7 +1,6 @@
 package phil.projects.mongo;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -43,8 +42,7 @@ public class MongoJSONFactory implements MongoDBObjectFactory {
 		BasicDBObject generatedObject = new BasicDBObject(); 
 		
 		//Get the key set from the sample and iterate over that
-		for (Iterator<String> it = sample.keySet().iterator(); it.hasNext(); ) {
-			String key = it.next();
+		for (String key : sample.keySet() ) {
 			Object sampleValue = sample.get(key);
 			logger.trace("Value read from sample for key " + key + ": " + sampleValue.toString());
 			

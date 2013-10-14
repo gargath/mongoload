@@ -2,9 +2,7 @@ package phil.projects.mongo.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -15,10 +13,7 @@ import phil.projects.mongo.MongoLoadConfig;
 public class MongoMain {
 
 	private static void parseDBObject(DBObject o, int indent) {
-		Set<String> set = o.keySet();
-		Iterator<String> it = set.iterator();
-		while (it.hasNext()) {
-			String key = it.next();
+		for (String key : o.keySet()) {
 			StringBuffer lineOut = new StringBuffer();
 			for (int i = 0; i < indent; i++) {
 				lineOut.append(" ");
