@@ -28,6 +28,7 @@ public class MongoLoadConfig {
 		private String username;
 		private String password;
 		private int numdocs;
+		private String samplePath;
 		
 		public MongoLoadConfigBuilder(String userDB, int numdocs) {
 			this.userDB = userDB;
@@ -59,6 +60,11 @@ public class MongoLoadConfig {
 			return this;
 		}
 		
+		public MongoLoadConfigBuilder withSamplePath(String path) {
+			this.samplePath = path;
+			return this;
+		}
+		
 		public MongoLoadConfig build() {
 			return new MongoLoadConfig(this);
 		}
@@ -80,6 +86,7 @@ public class MongoLoadConfig {
 			if ("".equals(config.getUserDB())) {
 				throw new IllegalArgumentException("User DB name missing");
 			}
+			//TODO: Add validation for sample path
 		}
 	}
 	
@@ -91,6 +98,7 @@ public class MongoLoadConfig {
 	private String username;
 	private String password;
 	private int numdocs;
+	private String samplePath;
 	
 	/**
 	 * Constructor for the config object using Properties. Use either this or MongoLoadConfigBuilder to obtain config object
@@ -124,6 +132,7 @@ public class MongoLoadConfig {
 			logger.error("Error reading number of documents from properties file: " + nfe.getMessage());
 			throw new IllegalArgumentException("Error reading port number from properties file", nfe);
 		}
+		this.samplePath = props.getProperty("samplepath");
 	}
 	
 	private MongoLoadConfig(MongoLoadConfigBuilder builder) {
@@ -134,6 +143,7 @@ public class MongoLoadConfig {
 		this.username = builder.username;
 		this.password = builder.password;
 		this.numdocs = builder.numdocs;
+		this.samplePath = builder.samplePath;
 	}
 	
 	private String scrubbedString(String s) {
@@ -195,4 +205,12 @@ public class MongoLoadConfig {
 	public void setNumdocs(int numdocs) {
 		this.numdocs = numdocs;
 	};
+	
+	public String getSamplePath() {
+		return samplePath;
+	}
+	
+	public void setSamplePath(String path) {
+		this.samplePath = path;
+	}
 }

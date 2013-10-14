@@ -10,12 +10,12 @@ public class MongoInvoiceFactory implements MongoDBObjectFactory {
 	Logger logger = Logger.getLogger(MongoInvoiceFactory.class);
 	
 	@Override
-	public DBObject generateDocument() {
+	public DBObject generateDocument(MongoLoadConfig config) {
 		//Get the RandomGenerator
 		RandomGenerator rand = RandomGenerator.getInstance();
 		
 		//The invoice number this invoice will use
-		String invoiceno = rand.getRandomUniqueString(6);
+		String invoiceno = rand.getRandomUniqueString(6).toUpperCase();
 		logger.debug("Generating invoice with number " + invoiceno);
 		//The top-level document
 		BasicDBObject invoice = new BasicDBObject("invoice number", invoiceno);

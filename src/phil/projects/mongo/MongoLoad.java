@@ -75,12 +75,14 @@ public class MongoLoad {
 			else {
 				//If authentication succeeds, return requested DB 
 				db = aDB.getSisterDB(config.getUserDB());
+				logger.debug("Retrieved sibling DB after authentication: " + db.getName());
 			}
 		}
 		if (db == null) {
 			//The requested DB does not exist
 			throw new IllegalArgumentException("Requested DB does not exist");
 		}
+		logger.debug("Returning DB " + db.getName());
 		return db;
 	}
 
@@ -113,7 +115,7 @@ public class MongoLoad {
 		
 		//Generate invoices and save each to the collection
 		for (progress = 0; progress < config.getNumdocs(); progress++) {
-			DBObject invoice = documentFactory.generateDocument();
+			DBObject invoice = documentFactory.generateDocument(config);
 			//using WriteConcern.ACKNOWLEDGED to ensure each document is at least accepted by the master
 			invoices.save(invoice, WriteConcern.ACKNOWLEDGED);
 			logger.debug("Saved an invoice to Mongo. Invoices remaining: " + (config.getNumdocs() - (progress+1)));

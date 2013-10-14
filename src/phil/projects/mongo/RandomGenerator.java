@@ -56,7 +56,7 @@ public class RandomGenerator {
 	private HashMap<Integer,Long> stringCount = new HashMap<Integer,Long>();
 	
 	//Characters to be used to form random strings
-	String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	String allowedCharacters = "abcdefghijklmnopqrstuvwxyz";
 	
 	/**
 	 * Calculates the maximum possible number of random strings for a given length based
@@ -84,7 +84,7 @@ public class RandomGenerator {
 	public String getRandomString(int length) {
 		//char array to hold the generated string
 		char[] string = new char[length];
-		
+
 		//iterate over array length and pick a random character from allowedCharacters for each index
 		for (int i = 0; i < length; i++) {
 			string[i] = allowedCharacters.charAt(rand.nextInt(allowedCharacters.length()));
@@ -149,6 +149,15 @@ public class RandomGenerator {
 	 */	
 	public int getRandomInt() {
 		return rand.nextInt();
+	}
+	
+	/**
+	 * Simple pass-through method to retrieve a double from the internal Random generator.
+	 * 
+	 * @return An random double
+	 */	
+	public double getRandomDouble() {
+		return rand.nextDouble();
 	}
 	
 	public String printStatistics() {

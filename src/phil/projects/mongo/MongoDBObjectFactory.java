@@ -4,6 +4,6 @@ import com.mongodb.DBObject;
 
 public interface MongoDBObjectFactory {
 	
-	public DBObject generateDocument();
+	public DBObject generateDocument(MongoLoadConfig config);
 	
 }
