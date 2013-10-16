@@ -39,7 +39,7 @@ public class MongoRunner implements Runnable {
 		//Create a new invoice loader. The type is interchangeable with other loaders
 //		loader = new MongoLoad(config, new MongoInvoiceFactory());
 		
-		String factoryClassName = "phil.projects.mongo.MongoInvoiceFactory";
+		String factoryClassName = config.getFactoryClass();
 		
 		MongoDBObjectFactory factory = null;
 		try {

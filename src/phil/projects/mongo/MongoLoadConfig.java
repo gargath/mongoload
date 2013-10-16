@@ -30,6 +30,7 @@ public class MongoLoadConfig {
 		private int numdocs;
 		private String samplePath;
 		private String sampleEncoding;
+		private String factoryClass;
 		
 		public MongoLoadConfigBuilder(String userDB, int numdocs) {
 			this.userDB = userDB;
@@ -71,6 +72,11 @@ public class MongoLoadConfig {
 			return this;
 		}
 		
+		public MongoLoadConfigBuilder withFactoryClass(String classname) {
+			this.factoryClass = classname;
+			return this;
+		}
+		
 		public MongoLoadConfig build() {
 			return new MongoLoadConfig(this);
 		}
@@ -106,6 +112,7 @@ public class MongoLoadConfig {
 	private int numdocs;
 	private String samplePath;
 	private String sampleEncoding;
+	private String factoryClass;
 	
 	/**
 	 * Constructor for the config object using Properties. Use either this or MongoLoadConfigBuilder to obtain config object
@@ -141,6 +148,7 @@ public class MongoLoadConfig {
 		}
 		this.samplePath = props.getProperty("samplepath");
 		this.sampleEncoding = props.getProperty("sampleencoding");
+		this.factoryClass = props.getProperty("factoryclass");
 	}
 	
 	private MongoLoadConfig(MongoLoadConfigBuilder builder) {
@@ -153,6 +161,7 @@ public class MongoLoadConfig {
 		this.numdocs = builder.numdocs;
 		this.samplePath = builder.samplePath;
 		this.sampleEncoding = builder.sampleEncoding;
+		this.factoryClass = builder.factoryClass;
 	}
 	
 	private String scrubbedString(String s) {
@@ -216,7 +225,7 @@ public class MongoLoadConfig {
 	};
 	
 	public String getSamplePath() {
-		return samplePath;
+		return scrubbedString(samplePath);
 	}
 	
 	public void setSamplePath(String path) {
@@ -224,10 +233,18 @@ public class MongoLoadConfig {
 	}
 	
 	public String getSampleEncoding() {
-		return this.sampleEncoding;
+		return scrubbedString(sampleEncoding);
 	}
 	
 	public void setSampleEncoding(String encoding) {
 		this.sampleEncoding = encoding;
+	}
+	
+	public String getFactoryClass() {
+		return scrubbedString(factoryClass);
+	}
+	
+	public void setFactoryClass(String className) {
+		this.factoryClass = className;
 	}
 }
