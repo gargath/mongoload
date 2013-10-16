@@ -29,6 +29,7 @@ public class MongoLoadConfig {
 		private String password;
 		private int numdocs;
 		private String samplePath;
+		private String sampleEncoding;
 		
 		public MongoLoadConfigBuilder(String userDB, int numdocs) {
 			this.userDB = userDB;
@@ -62,6 +63,11 @@ public class MongoLoadConfig {
 		
 		public MongoLoadConfigBuilder withSamplePath(String path) {
 			this.samplePath = path;
+			return this;
+		}
+		
+		public MongoLoadConfigBuilder withEncoding(String encoding) {
+			this.sampleEncoding = encoding;
 			return this;
 		}
 		
@@ -99,6 +105,7 @@ public class MongoLoadConfig {
 	private String password;
 	private int numdocs;
 	private String samplePath;
+	private String sampleEncoding;
 	
 	/**
 	 * Constructor for the config object using Properties. Use either this or MongoLoadConfigBuilder to obtain config object
@@ -133,6 +140,7 @@ public class MongoLoadConfig {
 			throw new IllegalArgumentException("Error reading port number from properties file", nfe);
 		}
 		this.samplePath = props.getProperty("samplepath");
+		this.sampleEncoding = props.getProperty("sampleencoding");
 	}
 	
 	private MongoLoadConfig(MongoLoadConfigBuilder builder) {
@@ -144,6 +152,7 @@ public class MongoLoadConfig {
 		this.password = builder.password;
 		this.numdocs = builder.numdocs;
 		this.samplePath = builder.samplePath;
+		this.sampleEncoding = builder.sampleEncoding;
 	}
 	
 	private String scrubbedString(String s) {
@@ -212,5 +221,13 @@ public class MongoLoadConfig {
 	
 	public void setSamplePath(String path) {
 		this.samplePath = path;
+	}
+	
+	public String getSampleEncoding() {
+		return this.sampleEncoding;
+	}
+	
+	public void setSampleEncoding(String encoding) {
+		this.sampleEncoding = encoding;
 	}
 }

@@ -1,7 +1,8 @@
 package phil.projects.mongo;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -43,8 +44,7 @@ public class MongoJSONFactory implements MongoDBObjectFactory {
 		BasicDBObject generatedObject = new BasicDBObject(); 
 		
 		//Get the key set from the sample and iterate over that
-		for (Iterator<String> it = sample.keySet().iterator(); it.hasNext(); ) {
-			String key = it.next();
+		for (String key : sample.keySet() ) {
 			Object sampleValue = sample.get(key);
 			logger.trace("Value read from sample for key " + key + ": " + sampleValue.toString());
 			
@@ -82,16 +82,37 @@ public class MongoJSONFactory implements MongoDBObjectFactory {
 		return generatedObject;
 	}
 	
-	private String readSample(String path) throws IOException {
-		//TODO: Add reading in sample file
-		return null;
+	private String readSample(String path, MongoLoadConfig config) throws IOException {
+		File f = new File(path);
+		if (!f.canRead()) {
+			logger.info("Sample file not found at absolute location. Will try relative to userdir");
+			f = new File(System.getProperty("user.dir")+path);
+			if (!f.canRead()) {
+				throw new IllegalArgumentException("Sample file not found");
+			}
+		}
+		
+		if (f.length() > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Sample file too big.");
+		}
+		
+		FileInputStream fis = new FileInputStream(f);
+		byte[] fileContents = new byte[(int)f.length()];
+		int bytesRead = fis.read(fileContents);
+		while (bytesRead < f.length()) {
+			logger.debug("Having to read in multiple steps...");
+			bytesRead = bytesRead + fis.read(fileContents, bytesRead-1, fis.available());
+		}
+		fis.close();
+		
+		return new String(fileContents, (config.getSampleEncoding() == null ? "UTF-8" : config.getSampleEncoding()));
 	}
 	
 	@Override
 	public DBObject generateDocument(MongoLoadConfig config) {
 		if (sample == null) {
 			try {
-				String JSONSample = readSample(config.getSamplePath());
+				String JSONSample = readSample(config.getSamplePath(), config);
 				sample = (DBObject)JSON.parse(JSONSample);
 			}
 			catch(IOException ioe) {
