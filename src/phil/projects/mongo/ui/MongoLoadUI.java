@@ -189,6 +189,7 @@ public class MongoLoadUI extends JPanel implements ActionListener {
 			public void uncaughtException(Thread t, Throwable e) {
 				JOptionPane.showMessageDialog(null, e.getMessage(), "Error in Worker Thread", JOptionPane.ERROR_MESSAGE);
 				logger.error("Error in worker thread: " + e.getMessage());
+				e.printStackTrace();
 				restoreUI();
 			}
 		});

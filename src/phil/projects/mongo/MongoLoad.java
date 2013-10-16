@@ -106,8 +106,8 @@ public class MongoLoad {
 		logger.debug("Successfully connected to DB " + db.getName());
 		
 		//Get the invoices collection...
-		DBCollection invoices = db.getCollection("invoices");
-		logger.info("Retrieved invoices collection");
+		DBCollection invoices = db.getCollection(config.getCollection());
+		logger.info("Retrieved " + config.getCollection() + " collection");
 		//...and drop it. This will always succeed, no need to guard against null
 		invoices.drop();
 		logger.debug("Collection emptied");
@@ -116,6 +116,10 @@ public class MongoLoad {
 		//Generate invoices and save each to the collection
 		for (progress = 0; progress < config.getNumdocs(); progress++) {
 			DBObject invoice = documentFactory.generateDocument(config);
+			if (invoice == null) {
+				logger.error("Factory returned null object. This should never happen...");
+				throw new RuntimeException("Factory returned null object");
+			}
 			//using WriteConcern.ACKNOWLEDGED to ensure each document is at least accepted by the master
 			invoices.save(invoice, WriteConcern.ACKNOWLEDGED);
 			logger.debug("Saved an invoice to Mongo. Invoices remaining: " + (config.getNumdocs() - (progress+1)));

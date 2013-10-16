@@ -3,9 +3,11 @@ package phil.projects.mongo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -40,6 +42,8 @@ public class MongoJSONFactory implements MongoDBObjectFactory {
 	 */
 	private final DBObject assembleDBObject(DBObject sample) {
 
+		logger.debug("Starting to assemble object");
+		
 		//Create a fresh DBObject to load
 		BasicDBObject generatedObject = new BasicDBObject(); 
 		
@@ -73,12 +77,27 @@ public class MongoJSONFactory implements MongoDBObjectFactory {
 				logger.debug("Generating subdocument for key " + key);
 				generatedObject.put(key, assembleDBObject((BasicDBObject)sample.get(key)));
 			}
+			else if (sampleValue instanceof BasicDBList) {
+				BasicDBList list = (BasicDBList)sampleValue;
+				BasicDBList out = new BasicDBList();
+				for (Object item : list) {
+					try {
+						out.add(rand.getRandomString(((String)item).length()));						
+					}
+					catch (ClassCastException cce) {
+						logger.error("Error processing token '" + sampleValue.toString() + "'. Contains non-string class " + item.getClass().getCanonicalName());
+						throw cce;
+					}
+				}
+				generatedObject.put(key, out);
+			}
 			else {
 				logger.error("Unsupported data type in sample. Object at \"" + key + "\": " + sample.get(key).getClass().getCanonicalName());
 				throw new IllegalArgumentException("Unsupported data type in sample document. Object at \"" + key + "\": " + sample.get(key).getClass().getCanonicalName());
 			}
 		}
-		logger.debug("Document generation complete");
+		logger.debug("Document generation complete.");
+		logger.trace("Generated object: " + generatedObject.toString());
 		return generatedObject;
 	}
 	
@@ -104,26 +123,37 @@ public class MongoJSONFactory implements MongoDBObjectFactory {
 			bytesRead = bytesRead + fis.read(fileContents, bytesRead-1, fis.available());
 		}
 		fis.close();
+		try {
+			String sampleString = new String(fileContents, (("".equals(config.getSampleEncoding()) ? "UTF-8" : config.getSampleEncoding())));
+			return sampleString;
+		}
+		catch (UnsupportedEncodingException uce) {
+			logger.error("Specified character encoding " + config.getSampleEncoding() + " is not supported.");
+			throw uce;
+		}
 		
-		return new String(fileContents, (config.getSampleEncoding() == null ? "UTF-8" : config.getSampleEncoding()));
+//		return new String(fileContents, (config.getSampleEncoding() == null ? "UTF-8" : config.getSampleEncoding()));
 	}
 	
 	@Override
 	public DBObject generateDocument(MongoLoadConfig config) {
 		if (sample == null) {
+			logger.info("Initializing model");
 			try {
 				String JSONSample = readSample(config.getSamplePath(), config);
 				sample = (DBObject)JSON.parse(JSONSample);
 			}
 			catch(IOException ioe) {
-				//TODO: Add exception handling
+				logger.error("IO Exception while parsing JSON: " + ioe.getMessage());
+				ioe.printStackTrace();
 			}
 			catch(JSONParseException jpe) {
-				//TODO: Add exception handling
+				logger.error("JSON parse exception while trying to parse sample: " + jpe.getMessage());
+				jpe.printStackTrace();
 			}
 		}
-		assembleDBObject(sample);
-		return null;
+		logger.info("Model init complete");
+		return assembleDBObject(sample);
 	}
 
 }

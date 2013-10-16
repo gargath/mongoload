@@ -31,6 +31,7 @@ public class MongoLoadConfig {
 		private String samplePath;
 		private String sampleEncoding;
 		private String factoryClass;
+		private String collection;
 		
 		public MongoLoadConfigBuilder(String userDB, int numdocs) {
 			this.userDB = userDB;
@@ -77,6 +78,11 @@ public class MongoLoadConfig {
 			return this;
 		}
 		
+		public MongoLoadConfigBuilder withCollection(String collection) {
+			this.collection = collection;
+			return this;
+		}
+		
 		public MongoLoadConfig build() {
 			return new MongoLoadConfig(this);
 		}
@@ -98,6 +104,9 @@ public class MongoLoadConfig {
 			if ("".equals(config.getUserDB())) {
 				throw new IllegalArgumentException("User DB name missing");
 			}
+			if ("".equals(config.getCollection())) {
+				throw new IllegalArgumentException("Collection name is missing");
+			}
 			//TODO: Add validation for sample path
 		}
 	}
@@ -113,6 +122,7 @@ public class MongoLoadConfig {
 	private String samplePath;
 	private String sampleEncoding;
 	private String factoryClass;
+	private String collection;
 	
 	/**
 	 * Constructor for the config object using Properties. Use either this or MongoLoadConfigBuilder to obtain config object
@@ -149,6 +159,7 @@ public class MongoLoadConfig {
 		this.samplePath = props.getProperty("samplepath");
 		this.sampleEncoding = props.getProperty("sampleencoding");
 		this.factoryClass = props.getProperty("factoryclass");
+		this.collection = props.getProperty("collection");
 	}
 	
 	private MongoLoadConfig(MongoLoadConfigBuilder builder) {
@@ -162,6 +173,7 @@ public class MongoLoadConfig {
 		this.samplePath = builder.samplePath;
 		this.sampleEncoding = builder.sampleEncoding;
 		this.factoryClass = builder.factoryClass;
+		this.collection = builder.collection;
 	}
 	
 	private String scrubbedString(String s) {
@@ -246,5 +258,13 @@ public class MongoLoadConfig {
 	
 	public void setFactoryClass(String className) {
 		this.factoryClass = className;
+	}
+	
+	public String getCollection() {
+		return collection;
+	}
+	
+	public void setCollection(String collection) {
+		this.collection = collection;
 	}
 }
