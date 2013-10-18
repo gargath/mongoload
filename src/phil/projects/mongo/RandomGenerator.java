@@ -82,6 +82,10 @@ public class RandomGenerator {
 	 * @return A random string of the supplied length
 	 */
 	public String getRandomString(int length) {
+		
+		if (length > 1024) {
+			throw new IllegalArgumentException("Requested length " + length + " is larger than 1024 characters");
+		}
 		//char array to hold the generated string
 		char[] string = new char[length];
 
@@ -104,6 +108,11 @@ public class RandomGenerator {
 	 * @throws UniqueStringSaturationException If the number of previously generated unique strings of this length is at 80% of the maximum number of possible combinations.
 	 */
 	public String getRandomUniqueString(int length) {
+		
+		if (length > 1024) {
+			throw new IllegalArgumentException("Requested length " + length + " is larger than 1024 characters");
+		}
+		
 		//Check whether the stringCount map already contains an entry for this length
 		if (stringCount.get(length) == null) {
 			//If not, create it and set the number of generated strings to 0
