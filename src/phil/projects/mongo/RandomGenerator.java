@@ -1,8 +1,8 @@
 package phil.projects.mongo;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -50,13 +50,13 @@ public class RandomGenerator {
 	private static long retryCount = 0;
 	
 	//Used to keep track of generated unique strings
-	private Vector<String> knownStrings = new Vector<String>();
+	private HashSet<String> knownStrings = new HashSet<String>();
 	
 	//Used to keep track of the number of generated unique strings for calculating saturation
 	private HashMap<Integer,Long> stringCount = new HashMap<Integer,Long>();
 	
 	//Characters to be used to form random strings
-	String allowedCharacters = "abcdefghijklmnopqrstuvwxyz";
+	static final String allowedCharacters = "abcdefghijklmnopqrstuvwxyz";
 	
 	/**
 	 * Calculates the maximum possible number of random strings for a given length based
@@ -122,9 +122,8 @@ public class RandomGenerator {
 		//Try to generate a unique string until one is found. Abort if this instance is nearing saturation for the given length of string
 		do {
 			String ret = getRandomString(length);
-			if (!knownStrings.contains(ret)) {
+			if (knownStrings.add(ret)) {
 				//A unique string was found. Add it to the list of strings and increment counter
-				knownStrings.add(ret);
 				stringCount.put(Integer.valueOf(length), Long.valueOf((stringCount.get(Integer.valueOf(length)).intValue()+1)));
 				return ret;
 			}

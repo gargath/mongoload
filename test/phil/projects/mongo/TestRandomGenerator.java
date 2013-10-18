@@ -22,20 +22,6 @@ public class TestRandomGenerator {
 	private final String allowedCharacters="abcdefghijklmnopqrstuvwxyz";
 	
 	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	/**
 	 * Test method for {@link phil.projects.mongo.RandomGenerator#getInstance()}.
 	 */
 	@Test
